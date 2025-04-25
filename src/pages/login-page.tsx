@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Form, Input, Button, Checkbox, Card, Typography } from 'antd';
 import { loginAPI } from "../store/api";
 import { useNavigate } from "react-router-dom";
+import KwikIntentLogo from '../images/kilogo.png';
 
 const { Title } = Typography;
 
@@ -31,8 +32,8 @@ export const Login = ({ onLogin }: LoginProps) => {
         style={{ width: 350, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
         bodyStyle={{ padding: 32 }}
       >
-        <div className="flex flex-col items-center mb-6">
-          <img src="/logo192.png" alt="Logo" className="w-16 h-16 mb-2" />
+        <div className="flex flex-col items-center mb-2">
+          <img src={KwikIntentLogo} alt="Logo" className="w-40 h-40" />
           <Title level={3} style={{ marginBottom: 0 }}>KwikIntent Login</Title>
         </div>
         <Form

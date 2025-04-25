@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Card, Badge, Space, Typography, Progress } from "antd"
+import { Card, Badge, Space, Typography, Progress, Tag } from "antd"
 import { ClockCircleOutlined, CreditCardOutlined } from "@ant-design/icons"
 
 const { Text } = Typography
@@ -72,9 +72,9 @@ export function HighIntentWidget() {
               </Text>
             </div>
             <Space style={{ marginTop: 8 }}>
-              <Badge color="#d1fae5" text="UPI" />
-              <Badge color="#d1fae5" text="Credit Card" />
-              <Badge color="#d1fae5" text="Debit Card" />
+              <Tag color="rgb(21 128 61 / var(--tw-text-opacity, 1))">UPI</Tag>
+              <Tag color="rgb(21 128 61 / var(--tw-text-opacity, 1))">Credit Card</Tag>
+              <Tag color="rgb(21 128 61 / var(--tw-text-opacity, 1))">Debit Card</Tag>
             </Space>
           </div>
         </Space>

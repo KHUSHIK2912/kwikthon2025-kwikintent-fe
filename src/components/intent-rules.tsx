@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Card,
   Input,
@@ -8,13 +8,15 @@ import {
   Typography,
   Collapse,
   Space,
+  InputNumber,
 } from "antd"
+import { getIntentRules } from "../store/api";
 
 const { TabPane } = Tabs
 const { Panel } = Collapse
 const { Text } = Typography
 
-const defaultValues = [
+export const defaultValues = [
     {
       "performance": {
         "totalDetections": 0,
@@ -213,279 +215,152 @@ const defaultValues = [
     }
   ]
 
-export function IntentRulesConfig() {
-  const [highIntentThreshold, setHighIntentThreshold] = useState(70)
-  const [priceSensitiveThreshold, setPriceSensitiveThreshold] = useState(50)
+type IntentRulesConfigProps = {
+  onChange?: (rules: IntentRulesData) => void;
+  onTabChange?: (intentType: string) => void;
+};
+
+export type IntentRulesData = typeof defaultValues;
+
+export function IntentRulesConfig({ onChange, onTabChange }: IntentRulesConfigProps) {
+  const [rules, setRules] = useState<IntentRulesData>(JSON.parse(JSON.stringify(defaultValues)));
+  const [activeIntentType, setActiveIntentType] = useState(rules[0]?.intentType || "high-intent");
+
+  // Fetch rules from API on mount
+  useEffect(() => {
+    async function fetchRules() {
+      try {
+        const apiRules = await getIntentRules();
+        if (Array.isArray(apiRules) && apiRules.length > 0) {
+          setRules(apiRules);
+          onChange?.(apiRules);
+        } else {
+          setRules(defaultValues);
+          onChange?.(defaultValues);
+        }
+      } catch (e) {
+        setRules(defaultValues);
+        onChange?.(defaultValues);
+      }
+    }
+    fetchRules();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Helper to update a signal or factor
+  const updateSignal = (intentIdx: number, type: "behavioralSignals" | "historicalFactors", signalIdx: number, key: string, value: any) => {
+    const newRules = JSON.parse(JSON.stringify(rules));
+    newRules[intentIdx][type][signalIdx][key] = value;
+    setRules(newRules);
+    onChange?.(newRules);
+  };
+
+  // Helper to update threshold
+  const updateThreshold = (intentIdx: number, value: number) => {
+    const newRules = JSON.parse(JSON.stringify(rules));
+    newRules[intentIdx].threshold = value;
+    setRules(newRules);
+    onChange?.(newRules);
+  };
+
+  // Handler for tab change
+  const handleTabChange = (key: string) => {
+    setActiveIntentType(key);
+    if (onTabChange) onTabChange(key);
+  };
 
   return (
-    <Tabs defaultActiveKey="high-intent">
-      <TabPane tab="High Intent" key="high-intent">
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <Card title="High Intent Detection Threshold">
-            <Text>Set the confidence threshold required to classify a user as high intent</Text>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
-              <Slider
-                min={0}
-                max={100}
-                step={1}
-                value={highIntentThreshold}
-                onChange={setHighIntentThreshold}
-                style={{ flex: 1 }}
-              />
-              <span style={{ width: 48, textAlign: "right" }}>{highIntentThreshold}%</span>
-            </div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              The confidence threshold required to classify a user as high intent
-            </Text>
-          </Card>
+    <Tabs
+      activeKey={activeIntentType}
+      onChange={handleTabChange}
+    >
+      {rules.map((intent, intentIdx) => (
+        <TabPane
+          tab={intent.intentType.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+          key={intent.intentType}
+        >
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Card title={`${intent.intentType.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())} Detection Threshold`}>
+              <Text>Set the confidence threshold required to classify a user as {intent.intentType.replace(/-/g, " ")}</Text>
+              <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
+                <Slider
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={intent.threshold}
+                  onChange={value => updateThreshold(intentIdx, value as number)}
+                  style={{ flex: 1 }}
+                />
+                <span style={{ width: 48, textAlign: "right" }}>{intent.threshold}%</span>
+              </div>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                The confidence threshold required to classify a user as {intent.intentType.replace(/-/g, " ")}
+              </Text>
+            </Card>
 
-          <Collapse accordion>
-            <Panel header="Behavioral Signals" key="behavioral-signals">
-              <Card>
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Time on Product Page</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User spends significant time on product page
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Deep Scroll Depth</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User scrolls to product details and reviews
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Multiple Image Views</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User views multiple product images
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Add to Cart Hover</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User hovers over add to cart button
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Return Visitor</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User has visited this product before
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </Space>
-              </Card>
-            </Panel>
-            <Panel header="Historical Data" key="historical-data">
-              <Card>
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Previous Purchase History</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User has purchased similar items before
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Cart Abandonment History</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User has abandoned cart in the past
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Average Order Value</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User's historical average order value
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </Space>
-              </Card>
-            </Panel>
-            <Panel header="Custom Rules" key="custom-rules">
-              <Card>
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <Text>Add Custom Rule</Text>
-                  <Input placeholder="Enter custom rule condition" />
-                </Space>
-              </Card>
-            </Panel>
-          </Collapse>
-        </Space>
-      </TabPane>
-
-      <TabPane tab="Price Sensitive" key="price-sensitive">
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <Card title="Price Sensitive Detection Threshold">
-            <Text>Set the confidence threshold required to classify a user as price sensitive</Text>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 16 }}>
-              <Slider
-                min={0}
-                max={100}
-                step={1}
-                value={priceSensitiveThreshold}
-                onChange={setPriceSensitiveThreshold}
-                style={{ flex: 1 }}
-              />
-              <span style={{ width: 48, textAlign: "right" }}>{priceSensitiveThreshold}%</span>
-            </div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              The confidence threshold required to classify a user as price sensitive
-            </Text>
-          </Card>
-
-          <Collapse accordion>
-            <Panel header="Behavioral Signals" key="behavioral-signals-ps">
-              <Card>
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Price Check Frequency</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User checks price multiple times or compares with other products
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Coupon Search</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User searches for coupons or discount codes
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Price Sort Usage</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User sorts products by price (low to high)
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Cart Hesitation</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User adds to cart but hesitates to checkout
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </Space>
-              </Card>
-            </Panel>
-            <Panel header="Historical Data" key="historical-data-ps">
-              <Card>
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Discount Usage History</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User has used discounts or coupons in the past
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Sale Purchase History</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User primarily purchases during sales
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </Space>
-              </Card>
-            </Panel>
-          </Collapse>
-        </Space>
-      </TabPane>
-
-      <TabPane tab="Just Browsing" key="just-browsing">
-        <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          <Text type="secondary">
-            Users who don't meet the criteria for High Intent or Price Sensitive are classified as Just Browsing.
-          </Text>
-          <Collapse accordion>
-            <Panel header="Behavioral Signals" key="behavioral-signals-jb">
-              <Card>
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Quick Page Views</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User views multiple products quickly
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>Limited Engagement</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User doesn't engage deeply with product details
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <Text>First-time Visitor</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        User is visiting the site for the first time
-                      </Text>
-                    </div>
-                    <Switch defaultChecked />
-                  </div>
-                </Space>
-              </Card>
-            </Panel>
-          </Collapse>
-        </Space>
-      </TabPane>
+            <Collapse accordion>
+              <Panel header="Behavioral Signals" key="behavioral-signals">
+                <Card>
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    {intent.behavioralSignals.map((signal, signalIdx) => (
+                      <div key={signal._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                          <Text>{signal.name.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}</Text>
+                          <br />
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            {signal.description}
+                          </Text>
+                          {"threshold" in signal && (
+                            <div style={{ marginTop: 8 }}>
+                              {/* <InputNumber
+                                min={1}
+                                max={typeof signal.threshold === "number" ? Math.max(signal.threshold * 2, 10) : 10}
+                                step={1}
+                                value={signal.threshold}
+                                onChange={(value) => {
+                                  if (value !== null) updateSignal(intentIdx, "behavioralSignals", signalIdx, "threshold", value);
+                                }}
+                                style={{ width: 180 }}
+                              /> */}
+                            </div>
+                          )}
+                        </div>
+                        <Switch
+                          checked={signal.enabled}
+                          onChange={checked => updateSignal(intentIdx, "behavioralSignals", signalIdx, "enabled", checked)}
+                        />
+                      </div>
+                    ))}
+                  </Space>
+                </Card>
+              </Panel>
+              {intent.historicalFactors.length > 0 && (
+                <Panel header="Historical Data" key="historical-data">
+                  <Card>
+                    <Space direction="vertical" style={{ width: "100%" }}>
+                      {intent.historicalFactors.map((factor, factorIdx) => (
+                        <div key={factor._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <Text>{factor.name.replace(/([A-Z])/g, " $1").replace(/^./, str => str.toUpperCase())}</Text>
+                            <br />
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                              {factor.description}
+                            </Text>
+                          </div>
+                          <Switch
+                            checked={factor.enabled}
+                            onChange={checked => updateSignal(intentIdx, "historicalFactors", factorIdx, "enabled", checked)}
+                          />
+                        </div>
+                      ))}
+                    </Space>
+                  </Card>
+                </Panel>
+              )}
+            </Collapse>
+          </Space>
+        </TabPane>
+      ))}
     </Tabs>
-  )
+  );
 }

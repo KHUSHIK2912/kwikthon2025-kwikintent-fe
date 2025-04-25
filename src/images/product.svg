@@ -1,0 +1,26 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background (optional, remove if not needed) -->
+  <rect width="400" height="400" rx="48" fill="#fff"/>
+  <!-- Headband -->
+  <path d="M120 120 Q200 30 280 120" stroke="#222" stroke-width="28" fill="none" stroke-linecap="round"/>
+  <!-- Left earcup outer -->
+  <ellipse cx="120" cy="260" rx="54" ry="62" fill="#222" stroke="#444" stroke-width="8"/>
+  <!-- Left earcup inner -->
+  <ellipse cx="120" cy="260" rx="32" ry="38" fill="#333"/>
+  <!-- Right earcup outer -->
+  <ellipse cx="280" cy="260" rx="68" ry="78" fill="#222" stroke="#444" stroke-width="10"/>
+  <!-- Right earcup inner -->
+  <ellipse cx="280" cy="260" rx="44" ry="52" fill="#333"/>
+  <!-- Headband connector left -->
+  <rect x="110" y="170" width="20" height="40" rx="10" fill="#222" stroke="#444" stroke-width="4" transform="rotate(18 120 190)"/>
+  <!-- Headband connector right -->
+  <rect x="270" y="170" width="20" height="40" rx="10" fill="#222" stroke="#444" stroke-width="4" transform="rotate(-18 280 190)"/>
+  <!-- boAt logo on right earcup (stylized) -->
+  <g>
+    <circle cx="280" cy="260" r="32" fill="#181818"/>
+    <polygon points="280,245 295,270 265,270" fill="#fff"/>
+    <rect x="270" y="275" width="20" height="5" rx="2.5" fill="#fff"/>
+  </g>
+  <!-- boAt text on headband -->
+  <text x="295" y="110" font-family="Arial, sans-serif" font-size="24" fill="#fff" font-weight="bold" transform="rotate(18 295 110)">boAt</text>
+</svg>

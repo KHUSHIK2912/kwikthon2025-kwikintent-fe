@@ -62,7 +62,7 @@ function AppLayout() {
                 icon: <SettingOutlined />,
               },
               { key: "widgets", label: "Widgets", icon: <AppstoreOutlined /> },
-              { key: "analytics", label: "Analytics", icon: <BarChartOutlined /> },
+            //   { key: "analytics", label: "Analytics", icon: <BarChartOutlined /> },
             ]}
             onClick={({ key }) => {
               if (key === "dashboard") navigate("/");

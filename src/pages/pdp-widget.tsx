@@ -11,6 +11,11 @@ import {
   Space,
 } from "antd";
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import Headphones from '../images/product.png';
+import ProductThumbNail_1 from '../images/product-1.png';
+import ProductThumbNail_2 from '../images/product-2.png';
+import ProductThumbNail_3 from '../images/product-3.png';
+import ProductThumbNail_4 from '../images/product-4.png';
 
 import "antd/dist/reset.css";
 import { PriceSensitiveWidget } from "../components/price-sensitive-widget";
@@ -19,6 +24,13 @@ import { JustBrowsingWidget } from "../components/just-browsing-widget";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
+
+const thumbnails = [
+  ProductThumbNail_1,
+  ProductThumbNail_2,
+  ProductThumbNail_3,
+  ProductThumbNail_4,
+];
 
 export default function PDPWidgetPreviewPage() {
   const [selectedIntent, setSelectedIntent] = useState("high-intent");
@@ -31,23 +43,11 @@ export default function PDPWidgetPreviewPage() {
           <Card>
             <Row gutter={24}>
               <Col xs={24} md={12}>
-                <Image
-                  src="/placeholder.svg?height=400&width=400"
-                  alt="Product"
-                  width={400}
-                  height={400}
-                  preview={false}
-                />
+                <img src={Headphones} alt="Product" className="w-400 h-400 mb-2" />
                 <Row gutter={8} style={{ marginTop: 8 }}>
-                  {[...Array(4)].map((_, i) => (
+                  {thumbnails.map((thumb, i) => (
                     <Col span={6} key={i}>
-                      <Image
-                        src="/placeholder.svg?height=80&width=80"
-                        alt="Product thumbnail"
-                        width={80}
-                        height={80}
-                        preview={false}
-                      />
+                      <img src={thumb} alt={`Product Thumbnail ${i + 1}`} className="w-400 h-400 mb-2" />
                     </Col>
                   ))}
                 </Row>
@@ -157,7 +157,7 @@ export default function PDPWidgetPreviewPage() {
                     "This user is casually browsing. The widget shows social proof to build trust and interest."}
                 </Paragraph>
               </Card>
-              <div>
+              {/* <div>
                 <Title level={5}>Widget Settings</Title>
                 <Text type="secondary">
                   Configure how the widget appears on the product page
@@ -170,7 +170,7 @@ export default function PDPWidgetPreviewPage() {
                   <Button block>Edit Widget Content</Button>
                   <Button block>Edit Widget Placement</Button>
                 </Space>
-              </div>
+              </div> */}
             </Space>
           </Card>
         </Col>

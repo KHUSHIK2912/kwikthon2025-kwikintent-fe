@@ -41,18 +41,20 @@ const widgetOptions = [
   },
 ];
 
-export function HighIntentWidgetConfig() {
+type HighIntentWidgetConfigProps = {
+  widgetConfigs: any[];
+  loading: boolean;
+};
+
+export function HighIntentWidgetConfig({ widgetConfigs, loading }: HighIntentWidgetConfigProps) {
   const [highIntentWidgetType, setHighIntentWidgetType] = useState("urgency");
   const [widgetConfig, setWidgetConfig] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchConfig() {
-      setLoading(true);
       try {
-        const configs = await getWidgetConfigs();
-        const highIntentConfig = Array.isArray(configs)
-          ? configs.find((c) => c.intentType === "high-intent")
+        const highIntentConfig = Array.isArray(widgetConfigs)
+          ? widgetConfigs.find((c) => c.intentType === "high-intent")
           : null;
         setWidgetConfig(highIntentConfig);
         if (highIntentConfig?.widgetType) {
@@ -61,10 +63,9 @@ export function HighIntentWidgetConfig() {
       } catch (e) {
         setWidgetConfig(null);
       }
-      setLoading(false);
     }
     fetchConfig();
-  }, []);
+  }, [widgetConfigs]);
 
   if (loading) {
     return <Spin />;
@@ -73,6 +74,8 @@ export function HighIntentWidgetConfig() {
   const content = widgetConfig?.content || {};
   const settings = widgetConfig?.settings || {};
   const styling = widgetConfig?.styling || {};
+
+  console.log(content)
 
   return (
     <Space direction="vertical" size="large" style={{ width: "100%" }}>
@@ -119,7 +122,13 @@ export function HighIntentWidgetConfig() {
         <Card title="Urgency Widget Settings">
           <Form layout="vertical">
             <Form.Item label="Urgency Message">
-              <Input defaultValue={content.message || "Limited time offer! Only 5 left in stock."} />
+              <Input defaultValue={content.title} />
+            </Form.Item>
+            <Form.Item label="Subtext">
+              <Input defaultValue={content.message} />
+            </Form.Item>
+            <Form.Item label="Additional text">
+              <Input defaultValue={content.additionalText} />
             </Form.Item>
             <Form.Item label="Show Countdown Timer" valuePropName="checked">
               <Switch defaultChecked={settings.showCountdown ?? true} />
@@ -150,7 +159,7 @@ export function HighIntentWidgetConfig() {
         <Card title="Payment Options Widget Settings">
           <Form layout="vertical">
             <Form.Item label="Prepaid Incentive Message">
-              <Input defaultValue={content.message || "Pay now and get 5% extra discount!"} />
+              <Input defaultValue={content.title || "Pay now and get 5% extra discount!"} />
             </Form.Item>
             <Form.Item label="Prepaid Discount (%)">
               <Input type="number" defaultValue={settings.discountPercentage || 5} />
@@ -173,7 +182,7 @@ export function HighIntentWidgetConfig() {
             <Form.Item label="Custom Widget HTML">
               <TextArea
                 rows={6}
-                defaultValue={content.html || `<div class="kwik-intent-widget">
+                defaultValue={`<div class="kwik-intent-widget">
   <h3>Special Offer!</h3>
   <p>This product is perfect for you based on your preferences.</p>
   <button>Add to Cart Now</button>
@@ -183,7 +192,7 @@ export function HighIntentWidgetConfig() {
             <Form.Item label="Custom CSS">
               <TextArea
                 rows={6}
-                defaultValue={styling.css || `.kwik-intent-widget {
+                defaultValue={`.kwik-intent-widget {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 4px;

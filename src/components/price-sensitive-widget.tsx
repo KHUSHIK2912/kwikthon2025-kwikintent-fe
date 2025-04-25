@@ -1,5 +1,7 @@
 import { Card, Badge, Button, Input, Space, Typography, Row, Col } from "antd";
 import { PercentageOutlined, TagsOutlined } from "@ant-design/icons";
+import Accessory1 from '../images/accessory-1.png';
+import Accessory2 from '../images/accessory-2.png';
 
 const { Text, Paragraph } = Typography;
 
@@ -57,14 +59,15 @@ export function PriceSensitiveWidget() {
             <Row gutter={8} style={{ marginTop: 8 }}>
               <Col span={12}>
                 <Space align="center" style={{ width: "100%" }}>
-                  <div
+                  {/* <div
                     style={{
                       width: 32,
                       height: 32,
                       borderRadius: 6,
                       background: "#f1f5f9",
                     }}
-                  />
+                  /> */}
+                  <img src={Accessory1} alt="Product" className="w-20 h-15 mb-2" />
                   <div style={{ fontSize: 12 }}>
                     <Text strong>Carrying Case</Text>
                     <br />
@@ -74,16 +77,17 @@ export function PriceSensitiveWidget() {
               </Col>
               <Col span={12}>
                 <Space align="center" style={{ width: "100%" }}>
-                  <div
+                  {/* <div
                     style={{
                       width: 32,
                       height: 32,
                       borderRadius: 6,
                       background: "#f1f5f9",
                     }}
-                  />
+                  /> */}
+                  <img src={Accessory2} alt="Product" className="w-20 h-15 mb-2" />
                   <div style={{ fontSize: 12 }}>
-                    <Text strong>Extra Ear Pads</Text>
+                    <Text strong>Extra Ear Cushions</Text>
                     <br />
                     <Text type="secondary">₹299</Text>
                   </div>
