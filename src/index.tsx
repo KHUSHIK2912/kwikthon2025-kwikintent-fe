@@ -17,7 +17,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from
 import { Login } from "./pages/login-page";
 
 function AppLayout() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('authToken'));
   const navigate = useNavigate();
   const location = useLocation();
 

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const getAuthToken = () => localStorage.getItem('authToken');
+
 export const loginAPI = async (username: string, password: string) => {
   let data = JSON.stringify({
     "id": "680ba07eb0f3532d513399b6",
@@ -18,6 +20,7 @@ export const loginAPI = async (username: string, password: string) => {
   };
 
   const response  = await axios.request(config);
+  localStorage.setItem('authToken', response.data.token);
   return response;
 }
 
@@ -29,16 +32,13 @@ export const createIntentRules = async (rule: any) => {
         "historicalFactors": rule.historicalFactors,
       });
 
-      console.log(rule)
-//   let data = JSON.stringify(rule);
-
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
     url: 'https://pdp-intent-api.aezy.in/api/intent-rules',
     headers: { 
       'accept': 'application/json', 
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MGJkMGIxNWZhYWRhMDZhY2NmNTk4ZiIsInJvbGUiOiJhZG1pbiIsIm1lcmNoYW50Ijp7Il9pZCI6IjY4MGJkMGIwNWZhYWRhMDZhY2NmNTk4MCIsIm5hbWUiOiJEZW1vIFN0b3JlIiwiZG9tYWluIjoiZGVtb3N0b3JlLm15c2hvcGlmeS5jb20ifSwiaWF0IjoxNzQ1NjExNTc5LCJleHAiOjE3NDU2OTc5Nzl9.sYPZd4qHNo7LjMBTpPawuNSsJzkRAtBqlM5O__G3xcE', 
+      'Authorization': `Bearer ${getAuthToken()}`,
       'Content-Type': 'application/json'
     },
     data : data
@@ -53,13 +53,13 @@ export const getIntentRules = async () => {
         maxBodyLength: Infinity,
         url: 'https://pdp-intent-api.aezy.in/api/intent-rules',
         headers: { 
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MGJkMGIxNWZhYWRhMDZhY2NmNTk4ZiIsInJvbGUiOiJhZG1pbiIsIm1lcmNoYW50Ijp7Il9pZCI6IjY4MGJkMGIwNWZhYWRhMDZhY2NmNTk4MCIsIm5hbWUiOiJEZW1vIFN0b3JlIiwiZG9tYWluIjoiZGVtb3N0b3JlLm15c2hvcGlmeS5jb20ifSwiaWF0IjoxNzQ1NjExNTc5LCJleHAiOjE3NDU2OTc5Nzl9.sYPZd4qHNo7LjMBTpPawuNSsJzkRAtBqlM5O__G3xcE'
+          'Authorization': `Bearer ${getAuthToken()}`
         }
       };
       
       const response = await axios.request(config);
 
-      return response.data;
+      return response.data.data;
 }
 
 export const getWidgetConfigs = async () => {
@@ -68,7 +68,7 @@ export const getWidgetConfigs = async () => {
         maxBodyLength: Infinity,
         url: 'https://pdp-intent-api.aezy.in/api/widgets',
         headers: { 
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MGJkMGIxNWZhYWRhMDZhY2NmNTk4ZiIsInJvbGUiOiJhZG1pbiIsIm1lcmNoYW50Ijp7Il9pZCI6IjY4MGJkMGIwNWZhYWRhMDZhY2NmNTk4MCIsIm5hbWUiOiJEZW1vIFN0b3JlIiwiZG9tYWluIjoiZGVtb3N0b3JlLm15c2hvcGlmeS5jb20ifSwiaWF0IjoxNzQ1NjExNTc5LCJleHAiOjE3NDU2OTc5Nzl9.sYPZd4qHNo7LjMBTpPawuNSsJzkRAtBqlM5O__G3xcE'
+          'Authorization': `Bearer ${getAuthToken()}`
         }
       };
       

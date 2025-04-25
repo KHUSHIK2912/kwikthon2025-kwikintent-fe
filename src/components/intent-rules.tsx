@@ -222,8 +222,20 @@ type IntentRulesConfigProps = {
 
 export type IntentRulesData = typeof defaultValues;
 
+function mergeWithDefaults(rules: IntentRulesData) {
+  return defaultValues.map(defaultRule => {
+    const found = rules.find(r => r.intentType === defaultRule.intentType);
+    return { ...defaultRule, ...found, 
+      behavioralSignals: found?.behavioralSignals ?? defaultRule.behavioralSignals,
+      historicalFactors: found?.historicalFactors ?? defaultRule.historicalFactors,
+      threshold: found?.threshold ?? defaultRule.threshold,
+      isActive: found?.isActive ?? defaultRule.isActive,
+    };
+  });
+}
+
 export function IntentRulesConfig({ onChange, onTabChange }: IntentRulesConfigProps) {
-  const [rules, setRules] = useState<IntentRulesData>(JSON.parse(JSON.stringify(defaultValues)));
+  const [rules, setRules] = useState<IntentRulesData>([]);
   const [activeIntentType, setActiveIntentType] = useState(rules[0]?.intentType || "high-intent");
 
   // Fetch rules from API on mount
@@ -232,8 +244,9 @@ export function IntentRulesConfig({ onChange, onTabChange }: IntentRulesConfigPr
       try {
         const apiRules = await getIntentRules();
         if (Array.isArray(apiRules) && apiRules.length > 0) {
-          setRules(apiRules);
-          onChange?.(apiRules);
+          const merged = mergeWithDefaults(apiRules);
+          setRules(merged);
+          onChange?.(merged);
         } else {
           setRules(defaultValues);
           onChange?.(defaultValues);
