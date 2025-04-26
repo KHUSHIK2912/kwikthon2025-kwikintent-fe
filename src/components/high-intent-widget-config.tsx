@@ -122,13 +122,10 @@ export function HighIntentWidgetConfig({ widgetConfigs, loading }: HighIntentWid
         <Card title="Urgency Widget Settings">
           <Form layout="vertical">
             <Form.Item label="Urgency Message">
-              <Input defaultValue={content.title} />
+              <Input defaultValue={content.title || "Limited time offer! Only 5 left in stock."} />
             </Form.Item>
-            <Form.Item label="Subtext">
-              <Input defaultValue={content.message} />
-            </Form.Item>
-            <Form.Item label="Additional text">
-              <Input defaultValue={content.additionalText} />
+            <Form.Item label="Urgency Subtext">
+              <Input defaultValue={content.message || "Only 5 left in stock."} />
             </Form.Item>
             <Form.Item label="Show Countdown Timer" valuePropName="checked">
               <Switch defaultChecked={settings.showCountdown ?? true} />
@@ -159,7 +156,7 @@ export function HighIntentWidgetConfig({ widgetConfigs, loading }: HighIntentWid
         <Card title="Payment Options Widget Settings">
           <Form layout="vertical">
             <Form.Item label="Prepaid Incentive Message">
-              <Input defaultValue={content.title || "Pay now and get 5% extra discount!"} />
+              <Input defaultValue={content.message || "Pay now and get 5% extra discount!"} />
             </Form.Item>
             <Form.Item label="Prepaid Discount (%)">
               <Input type="number" defaultValue={settings.discountPercentage || 5} />

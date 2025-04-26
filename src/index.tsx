@@ -15,6 +15,7 @@ import DashboardPage from "./pages/dashboard";
 import ConfigurationPage from "./pages/configuration";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Login } from "./pages/login-page";
+import KwikIntentLogo from './images/kilogo.png';
 
 function AppLayout() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('authToken'));
@@ -44,7 +45,7 @@ function AppLayout() {
       {isLoggedIn && (
         <Header style={{ display: "flex", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <BulbOutlined style={{ color: "#f43f5e", fontSize: 24 }} />
+          <img src={KwikIntentLogo} alt="Logo" className="w-25 h-12" />
             <span style={{ fontSize: 20, fontWeight: 600, color: "#fff" }}>
               KwikIntent
             </span>

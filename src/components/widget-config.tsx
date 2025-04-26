@@ -20,11 +20,11 @@ const { Option } = Select
 const { TextArea } = Input
 const { Text, Title } = Typography
 
-const defaultWidgetConfigs = [
+export const defaultWidgetConfigs = [
   {
       "content": {
           "title": "Limited Time Offer!",
-          "message": "Only {stock} left in stock at this price!",
+          "message": "Only 5 left in stock at this price!",
           "additionalText": "Offer expires in {countdown}"
       },
       "styling": {
